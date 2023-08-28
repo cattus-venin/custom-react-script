@@ -38,6 +38,8 @@ const getCacheIdentifier = require('react-dev-utils/getCacheIdentifier');
 // @remove-on-eject-end
 const createEnvironmentHash = require('./webpack/persistentCache/createEnvironmentHash');
 
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
+
 // Source maps are resource heavy and can cause out of memory issue for large source files.
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
 
@@ -329,6 +331,19 @@ module.exports = function (webpackEnv) {
           'scheduler/tracing': 'scheduler/tracing-profiling',
         }),
         ...(modules.webpackAliases || {}),
+      },
+      fallback: {
+            // Use can only include required modules. Also install the package.
+            // for example: npm install --save-dev assert
+            url: require.resolve('url'),
+            fs: require.resolve('fs'),
+            assert: require.resolve('assert'),
+            crypto: require.resolve('crypto-browserify'),
+            http: require.resolve('stream-http'),
+            https: require.resolve('https-browserify'),
+            os: require.resolve('os-browserify/browser'),
+            buffer: require.resolve('buffer'),
+            stream: require.resolve('stream-browserify'),
       },
       plugins: [
         // Prevents users from importing files from outside of src/ (or node_modules/).
